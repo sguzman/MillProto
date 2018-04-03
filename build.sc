@@ -85,11 +85,8 @@ object proto extends ScalaModule {
 
   /** Ivy dependencies */
   def ivyDeps = Agg(
-    ivy"net.ruippeixotog::scala-scraper:2.1.0",
-    ivy"org.scalaj::scalaj-http:2.3.0",
-    ivy"org.apache.commons:commons-lang3:3.7",
-    ivy"com.outr::scribe:2.3.1",
-    ivy"org.msgpack::msgpack-scala:0.8.13"
+    ivy"com.thesamet.scalapb::compilerplugin:0.7.1",
+    ivy"com.thesamet.scalapb::scalapb-runtime:0.7.1"
   )
 
   def forkArgs = Seq("-Xmx4g")
