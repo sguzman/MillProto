@@ -1,4 +1,4 @@
-package com.githbu.sguzman.proto
+package com.github.sguzman.proto
 
 object Main {
   def main(args: Array[String]): Unit = {
