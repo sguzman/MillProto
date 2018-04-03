@@ -2,6 +2,7 @@ import mill._
 import mill.scalalib._
 import coursier.maven.MavenRepository
 import publish._
+import ammonite.ops._
 
 object proto extends ScalaModule {
   /** Main class */
@@ -68,6 +69,35 @@ object proto extends ScalaModule {
     "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
   )
 
+  /** SPBC Executable Download */
+  def spbc = T{
+    mkdir(T.ctx().dest)
+    import ammonite.ops.ImplicitWd._
+    val wd = pwd
+    interp.load.ivy("org.scalaj" %% "scalaj-http" % "2.3.0")
+    import scalaj.http._
+
+    val exec = Http("https://github.com/scalapb/ScalaPB/releases/download/v0.7.1/scalapbc-0.7.1.zip")
+      .option(HttpOptions.followRedirects(true)).asBytes.body
+
+    write(T.ctx().dest / "spbc.zip", exec)
+    %%('unzip, T.ctx().dest / "spbc.zip", "-d", T.ctx().dest)
+
+    %%('find, T.ctx().dest)
+  }
+
+  def protoSources = T{
+    import ammonite.ops.ImplicitWd._
+    val _ = spbc()
+    val name = "proto"
+    val string = %%('find, pwd / name / "protobuf").out.lines
+    val exec = pwd / "out" / name / "spbc" / "dest" / "scalapbc-0.7.1" / "bin" / "scalapbc"
+    val protoFiles = (ls.rec! (pwd / name / "protobuf"))
+
+    %%bash(exec, s"--proto_path=${pwd / name / "protobuf"}", protoFiles.mkString(""), s"--scala_out=${pwd / name / "src"}")
+
+    (ls.rec! pwd / name / "protobuf").map(PathRef)
+  }
 
   /** Javac parameters */
   def javacOptions = Seq("-server")
