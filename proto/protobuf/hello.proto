@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message Hello {
+    string yes = 1;
+    bool no = 2;
+    bool blah = 3;
+    bool bla4 = 4;
+}
